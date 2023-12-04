@@ -11,7 +11,7 @@ import javax.swing.*;
 
 public class SpaceShooter extends JPanel implements ActionListener, KeyListener {
     private int playerX, playerY;
-    private boolean[] keys;
+    private boolean[] isKeyPressed;
     private Timer timer;
     private List<Bullet> bullets;
     private List<SpaceObject> spaceObjects;
@@ -20,11 +20,12 @@ public class SpaceShooter extends JPanel implements ActionListener, KeyListener 
     private int bulletDelay;
     private int maxBulletDelay;
 
-    private BufferedImage spaceshipImage; // Added for the spaceship image
-private BufferedImage bulletImage;
-private BufferedImage spaceObjectImage;
+    private BufferedImage spaceshipImage;
+    private BufferedImage bulletImage;
+    private BufferedImage spaceObjectImage;
+
     public SpaceShooter() {
-        keys = new boolean[256];
+        isKeyPressed = new boolean[256];
         playerX = 150;
         playerY = 150;
         bullets = new ArrayList<>();
@@ -34,14 +35,7 @@ private BufferedImage spaceObjectImage;
         bulletDelay = 0;
         maxBulletDelay = 30;
 
-        try {
-            spaceshipImage = ImageIO.read(new File("C:\\Users\\PC\\Documents\\NetBeansProjects\\mavenproject2\\src\\main\\java\\space2.png"));
-            bulletImage = ImageIO.read(new File("C:\\Users\\PC\\Documents\\NetBeansProjects\\mavenproject2\\src\\main\\java\\space.jpg")); // Provide the correct path
-            spaceObjectImage = ImageIO.read(new File("C:\\Users\\PC\\Documents\\NetBeansProjects\\mavenproject2\\src\\main\\java\\space.jpg")); // Provide the correct path
-    
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadImages();
 
         timer = new Timer(10, this);
         timer.start();
@@ -51,6 +45,16 @@ private BufferedImage spaceObjectImage;
         setFocusTraversalKeysEnabled(false);
 
         spawnSpaceObjects();
+    }
+
+    private void loadImages() {
+        try {
+            spaceshipImage = ImageIO.read(new File("C:\\Users\\PC\\Documents\\NetBeansProjects\\mavenproject2\\src\\main\\java\\space2.png"));
+            bulletImage = ImageIO.read(new File("C:\\Users\\PC\\Documents\\NetBeansProjects\\mavenproject2\\src\\main\\java\\space.jpg"));
+            spaceObjectImage = ImageIO.read(new File("C:\\Users\\PC\\Documents\\NetBeansProjects\\mavenproject2\\src\\main\\java\\space.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void spawnSpaceObjects() {
@@ -77,7 +81,7 @@ private BufferedImage spaceObjectImage;
 
         g.setColor(Color.red);
         for (Bullet bullet : bullets) {
-            g.drawImage(bulletImage, bullet.getX(), bullet.getY(), 10, 20, this); // Adjust the width and height as needed
+            g.drawImage(bulletImage, bullet.getX(), bullet.getY(), 10, 20, this);
         }
 
         g.setColor(Color.white);
@@ -97,21 +101,21 @@ private BufferedImage spaceObjectImage;
         if (playerLives > 0) {
             int speed = 5;
 
-            if (keys[KeyEvent.VK_LEFT] && playerX > 0) {
+            if (isKeyPressed[KeyEvent.VK_LEFT] && playerX > 0) {
                 playerX -= speed;
             }
-            if (keys[KeyEvent.VK_RIGHT] && playerX < getWidth() - 20) {
+            if (isKeyPressed[KeyEvent.VK_RIGHT] && playerX < getWidth() - 20) {
                 playerX += speed;
             }
-            if (keys[KeyEvent.VK_UP] && playerY > 0) {
+            if (isKeyPressed[KeyEvent.VK_UP] && playerY > 0) {
                 playerY -= speed;
             }
-            if (keys[KeyEvent.VK_DOWN] && playerY < getHeight() - 60) {
+            if (isKeyPressed[KeyEvent.VK_DOWN] && playerY < getHeight() - 60) {
                 playerY += speed;
             }
 
-            if (keys[KeyEvent.VK_SPACE] && bulletDelay <= 0) {
-                int bulletX = playerX + (60 )/2;
+            if (isKeyPressed[KeyEvent.VK_SPACE] && bulletDelay <= 0) {
+                int bulletX = playerX + (60) / 2;
                 int bulletY = playerY;
                 bullets.add(new Bullet(bulletX, bulletY));
                 bulletDelay = maxBulletDelay;
@@ -265,7 +269,7 @@ private BufferedImage spaceObjectImage;
     }
 
     public void keyPressed(KeyEvent e) {
-        keys[e.getKeyCode()] = true;
+        isKeyPressed[e.getKeyCode()] = true;
 
         if (playerLives <= 0 && e.getKeyCode() == KeyEvent.VK_R) {
             restartGame();
@@ -273,7 +277,7 @@ private BufferedImage spaceObjectImage;
     }
 
     public void keyReleased(KeyEvent e) {
-        keys[e.getKeyCode()] = false;
+        isKeyPressed[e.getKeyCode()] = false;
     }
 
     public void keyTyped(KeyEvent e) {}
